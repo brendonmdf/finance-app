@@ -3,11 +3,11 @@ import { createClient } from '@supabase/supabase-js'
 // Verificar se estamos no lado do cliente
 const isClient = typeof window !== 'undefined'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder_key'
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Criar cliente apenas se estivermos no cliente ou se as variáveis estiverem definidas
-export const supabase = isClient || (supabaseUrl !== 'https://placeholder.supabase.co' && supabaseAnonKey !== 'placeholder_key')
+// Criar cliente apenas se as variáveis estiverem definidas
+export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,

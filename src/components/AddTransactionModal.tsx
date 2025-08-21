@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useCategories } from '@/hooks/useCategories';
+import { usePaymentMethods } from '@/hooks/usePaymentMethods';
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -18,17 +20,24 @@ interface TransactionData {
   title: string;
   amount: number;
   type: 'income' | 'expense';
+  category: string;
   paymentMethod: string;
   date: string;
+  description?: string;
 }
 
 export default function AddTransactionModal({ isOpen, onClose, onSubmit }: AddTransactionModalProps) {
+  const { categories, getCategoriesByType } = useCategories();
+  const { paymentMethods } = usePaymentMethods();
+  
   const [formData, setFormData] = useState<TransactionData>({
     title: '',
     amount: 0,
     type: 'income',
+    category: '',
     paymentMethod: '',
-    date: new Date().toISOString().split('T')[0] || ''
+    date: new Date().toISOString().split('T')[0] || '',
+    description: ''
   });
 
   const transactionTypes = [
@@ -36,9 +45,8 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit }: AddTr
     { value: 'expense', label: 'Despesa' }
   ];
 
-  const paymentMethods = [
-    'Pix', 'Cartão de Crédito', 'Cartão de Débito', 'Dinheiro', 'Transferência'
-  ];
+  // Obter categorias baseadas no tipo selecionado
+  const availableCategories = getCategoriesByType(formData.type);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,10 +56,17 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit }: AddTr
       title: '',
       amount: 0,
       type: 'income',
+      category: '',
       paymentMethod: '',
-      date: new Date().toISOString().split('T')[0] || ''
+      date: new Date().toISOString().split('T')[0] || '',
+      description: ''
     });
   };
+
+  // Resetar categoria quando o tipo mudar
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, category: '' }));
+  }, [formData.type]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -109,6 +124,25 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit }: AddTr
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="category" className="text-muted-foreground">Categoria</Label>
+            <Select
+              value={formData.category}
+              onValueChange={(value) => setFormData({ ...formData, category: value })}
+            >
+              <SelectTrigger className="bg-background border-border text-foreground">
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent className="bg-card border-border">
+                {availableCategories.map((category) => (
+                  <SelectItem key={category.id} value={category.name} className="text-foreground hover:bg-accent">
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="paymentMethod" className="text-muted-foreground">Método de pagamento</Label>
             <Select
               value={formData.paymentMethod}
@@ -119,12 +153,24 @@ export default function AddTransactionModal({ isOpen, onClose, onSubmit }: AddTr
               </SelectTrigger>
               <SelectContent className="bg-card border-border">
                 {paymentMethods.map((method) => (
-                  <SelectItem key={method} value={method} className="text-foreground hover:bg-accent">
-                    {method}
+                  <SelectItem key={method.id} value={method.name} className="text-foreground hover:bg-accent">
+                    {method.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-muted-foreground">Descrição (opcional)</Label>
+            <Input
+              id="description"
+              type="text"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground"
+              placeholder="Descrição da transação"
+            />
           </div>
 
           <div className="space-y-2">

@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { Sidebar } from "@/components/ui/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Finance.ai - Gestão Financeira Inteligente",
-  description: "Plataforma de gestão financeira que utiliza IA para monitorar suas movimentações e oferecer insights personalizados",
+  title: "Finance.ai - Autenticação",
+  description: "Faça login ou registre-se na plataforma Finance.ai",
 };
 
-export default function RootLayout({
+export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -20,7 +18,9 @@ export default function RootLayout({
     <html lang="pt-BR" className="dark">
       <body className={`${inter.className} min-h-screen bg-background text-foreground`}>
         <AuthProvider>
-          {children}
+          <div className="flex min-h-screen items-center justify-center">
+            {children}
+          </div>
         </AuthProvider>
       </body>
     </html>

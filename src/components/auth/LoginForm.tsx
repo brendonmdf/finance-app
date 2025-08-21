@@ -126,6 +126,7 @@ export function LoginForm() {
                 placeholder="••••••••"
                 {...register("password")}
                 className="h-12"
+                autoComplete="current-password"
               />
               {errors.password && (
                 <p className="text-sm text-red-500">{errors.password.message}</p>
@@ -180,15 +181,7 @@ export function LoginForm() {
             </div>
             
             <div className="text-xs text-muted-foreground">
-              Ao continuar, você concorda com nossos{" "}
-              <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
-                Termos de Serviço
-              </Link>{" "}
-              e{" "}
-              <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
-                Política de Privacidade
-              </Link>
-              .
+              Ao continuar, você concorda com nossos termos de serviço e política de privacidade.
             </div>
           </div>
         </div>

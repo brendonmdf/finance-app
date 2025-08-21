@@ -1,201 +1,149 @@
-# Finance.ai - Plataforma de Gestão Financeira
+# Finance.ai - Plataforma de Gestão Financeira Inteligente
 
-Uma aplicação moderna de gestão financeira construída com Next.js, TypeScript e Tailwind CSS, com design inspirado em dashboards financeiros profissionais.
+Uma plataforma moderna de gestão financeira construída com Next.js, TypeScript e Supabase, que permite aos usuários gerenciar suas finanças pessoais de forma inteligente e intuitiva.
 
 ## 🚀 Funcionalidades
 
-- **Dashboard Interativo**: Visão geral das finanças com gráficos e métricas
-- **Gestão de Transações**: Adicionar, editar e categorizar transações
-- **Análise por Categoria**: Visualização de gastos e receitas por categoria
-- **Gráficos Interativos**: Gráficos de rosca e barras para análise visual
-- **Responsivo**: Interface adaptável para desktop e mobile
-- **Tema Escuro**: Design moderno com tema escuro por padrão
+- **Autenticação Segura**: Sistema de login e registro com Supabase Auth
+- **Gestão de Transações**: Adicione, edite e gerencie receitas e despesas
+- **Categorização Inteligente**: Categorias personalizáveis para organizar suas finanças
+- **Dashboard Interativo**: Visualizações e gráficos em tempo real
+- **Relatórios Detalhados**: Análises completas de suas movimentações
+- **Orçamento**: Controle de gastos por categoria
+- **Metas Financeiras**: Defina e acompanhe seus objetivos
+- **Interface Responsiva**: Design moderno que funciona em todos os dispositivos
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Tecnologias
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS
-- **Ícones**: Lucide React
+- **Frontend**: Next.js 15, React 18, TypeScript
+- **UI**: Tailwind CSS, Shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Auth, Real-time)
 - **Gráficos**: Recharts
-- **Banco de Dados**: Supabase (configurável)
-- **Deploy**: Vercel
+- **Formulários**: React Hook Form + Zod
+- **Ícones**: Lucide React
 
 ## 📋 Pré-requisitos
 
 - Node.js 18+ 
 - npm ou yarn
-- Conta no Supabase (opcional para desenvolvimento)
+- Conta no Supabase
 
-## 🔧 Instalação
+## 🔧 Configuração
 
-1. **Clone o repositório**
+### 1. Clone o repositório
+
 ```bash
-git clone <seu-repositorio>
+git clone <url-do-repositorio>
 cd finance-app
 ```
 
-2. **Instale as dependências**
+### 2. Instale as dependências
+
 ```bash
 npm install
 ```
 
-3. **Configure as variáveis de ambiente**
-```bash
-cp env.example .env.local
-```
+### 3. Configure as variáveis de ambiente
 
-Edite o arquivo `.env.local` com suas configurações:
+Crie um arquivo `.env.local` na raiz do projeto:
+
 ```env
+# Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=sua_url_do_supabase
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anonima_do_supabase
 ```
 
-4. **Execute o projeto**
+### 4. Configure o banco de dados
+
+Execute o script SQL fornecido no arquivo `supabase-schema.sql` no seu projeto Supabase:
+
+```bash
+# Acesse o dashboard do Supabase
+# Vá para SQL Editor
+# Execute o conteúdo do arquivo supabase-schema.sql
+```
+
+### 5. Execute a aplicação
+
 ```bash
 npm run dev
 ```
 
 A aplicação estará disponível em `http://localhost:3000`
 
-## 🗄️ Configuração do Supabase
+## 🗄️ Estrutura do Banco de Dados
 
-### 1. Crie um projeto no Supabase
-- Acesse [supabase.com](https://supabase.com)
-- Crie uma nova conta ou faça login
-- Crie um novo projeto
+### Tabelas Principais
 
-### 2. Configure as tabelas
-Execute os seguintes comandos SQL no editor SQL do Supabase:
+- **profiles**: Perfis dos usuários
+- **categories**: Categorias de transações
+- **payment_methods**: Métodos de pagamento
+- **transactions**: Transações financeiras
+- **budgets**: Orçamentos
+- **goals**: Metas financeiras
 
-```sql
--- Tabela de transações
-CREATE TABLE transactions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  title TEXT NOT NULL,
-  amount DECIMAL(10,2) NOT NULL,
-  type TEXT CHECK (type IN ('income', 'expense')) NOT NULL,
-  category TEXT NOT NULL,
-  payment_method TEXT NOT NULL,
-  date DATE NOT NULL,
-  user_id UUID REFERENCES auth.users(id),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+### Políticas de Segurança
 
--- Tabela de categorias
-CREATE TABLE categories (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  type TEXT CHECK (type IN ('income', 'expense')) NOT NULL,
-  color TEXT NOT NULL,
-  icon TEXT NOT NULL,
-  user_id UUID REFERENCES auth.users(id)
-);
+Todas as tabelas possuem Row Level Security (RLS) configurado, garantindo que cada usuário só acesse seus próprios dados.
 
--- Tabela de métodos de pagamento
-CREATE TABLE payment_methods (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  name TEXT NOT NULL,
-  user_id UUID REFERENCES auth.users(id)
-);
+## 🔐 Autenticação
 
--- Habilitar RLS (Row Level Security)
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE payment_methods ENABLE ROW LEVEL SECURITY;
+O sistema utiliza Supabase Auth com as seguintes funcionalidades:
 
--- Políticas de segurança básicas
-CREATE POLICY "Users can view own transactions" ON transactions
-  FOR SELECT USING (auth.uid() = user_id);
+- Registro com email e senha
+- Login seguro
+- Recuperação de senha
+- Sessões persistentes
+- Proteção de rotas
 
-CREATE POLICY "Users can insert own transactions" ON transactions
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+## 📱 Como Usar
 
-CREATE POLICY "Users can update own transactions" ON transactions
-  FOR UPDATE USING (auth.uid() = user_id);
+### 1. Registro e Login
+- Acesse `/auth/register` para criar uma conta
+- Use `/auth/login` para fazer login
 
-CREATE POLICY "Users can delete own transactions" ON transactions
-  FOR DELETE USING (auth.uid() = user_id);
-```
+### 2. Primeiro Acesso
+- Após o registro, categorias padrão são criadas automaticamente
+- Métodos de pagamento básicos são configurados
+- Comece adicionando suas primeiras transações
 
-### 3. Configure autenticação
-- No painel do Supabase, vá para Authentication > Settings
-- Configure os provedores de autenticação desejados (Google, GitHub, etc.)
+### 3. Adicionando Transações
+- Clique em "Nova Transação" no dashboard
+- Preencha título, valor, tipo, categoria e método de pagamento
+- As transações aparecem automaticamente no dashboard
 
-## 🚀 Deploy na Vercel
-
-### 1. Conecte com GitHub
-- Faça push do código para um repositório GitHub
-- Acesse [vercel.com](https://vercel.com)
-- Conecte sua conta GitHub
-
-### 2. Configure o projeto
-- Clique em "New Project"
-- Selecione o repositório `finance-app`
-- Configure as variáveis de ambiente:
-  - `NEXT_PUBLIC_SUPABASE_URL`
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-### 3. Deploy
-- Clique em "Deploy"
-- Aguarde o build e deploy automático
-
-## 📱 Estrutura do Projeto
-
-```
-src/
-├── app/                    # App Router do Next.js
-│   ├── globals.css        # Estilos globais
-│   ├── layout.tsx         # Layout principal
-│   ├── page.tsx           # Página do dashboard
-│   ├── transactions/      # Página de transações
-│   └── subscription/      # Página de assinatura
-├── components/            # Componentes reutilizáveis
-│   ├── Navigation.tsx     # Navegação principal
-│   ├── BalanceCard.tsx    # Card de saldo
-│   ├── MetricCard.tsx     # Cards de métricas
-│   ├── DonutChart.tsx     # Gráfico de rosca
-│   ├── ExpensesByCategory.tsx # Gastos por categoria
-│   ├── TransactionsList.tsx   # Lista de transações
-│   └── AddTransactionModal.tsx # Modal de nova transação
-└── lib/                   # Utilitários e configurações
-    └── supabase.ts        # Configuração do Supabase
-```
+### 4. Visualizações
+- Dashboard com resumo geral
+- Gráficos de receitas vs despesas
+- Análise por categorias
+- Histórico completo de transações
 
 ## 🎨 Personalização
 
-### Cores
-As cores podem ser personalizadas no arquivo `tailwind.config.ts`:
+### Categorias
+- Crie categorias personalizadas para receitas e despesas
+- Defina cores e ícones para melhor visualização
+- Organize suas finanças da forma que preferir
 
-```typescript
-colors: {
-  primary: {
-    500: '#22c55e', // Cor principal
-  },
-  dark: {
-    950: '#020617', // Fundo principal
-  }
-}
-```
+### Métodos de Pagamento
+- Adicione seus métodos de pagamento preferidos
+- Configure métodos padrão para facilitar o uso
 
-### Componentes
-Todos os componentes estão na pasta `src/components/` e podem ser facilmente modificados para atender às suas necessidades.
+## 🚀 Deploy
 
-## 🔒 Segurança
+### Vercel (Recomendado)
 
-- **RLS (Row Level Security)**: Implementado no Supabase para proteger dados dos usuários
-- **Autenticação**: Sistema de autenticação robusto com múltiplos provedores
-- **Validação**: Validação de entrada em todos os formulários
-- **HTTPS**: Forçado em produção pela Vercel
+1. Conecte seu repositório ao Vercel
+2. Configure as variáveis de ambiente
+3. Deploy automático a cada push
 
-## 📊 Funcionalidades Futuras
+### Outras Plataformas
 
-- [ ] Relatórios avançados com IA
-- [ ] Integração com bancos brasileiros
-- [ ] Notificações push
-- [ ] App mobile nativo
-- [ ] Exportação para Excel/PDF
-- [ ] Múltiplas moedas
-- [ ] Backup automático
+A aplicação pode ser deployada em qualquer plataforma que suporte Next.js:
+- Netlify
+- Railway
+- Heroku
+- AWS Amplify
 
 ## 🤝 Contribuição
 
@@ -213,19 +161,21 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Se você encontrar algum problema ou tiver dúvidas:
 
-1. Verifique a documentação
-2. Procure por issues existentes
-3. Crie uma nova issue com detalhes do problema
+1. Verifique se todas as variáveis de ambiente estão configuradas
+2. Confirme se o banco de dados foi configurado corretamente
+3. Verifique os logs do console para erros
+4. Abra uma issue no repositório
 
-## 🙏 Agradecimentos
+## 🔮 Próximas Funcionalidades
 
-- [Next.js](https://nextjs.org/) - Framework React
-- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS
-- [Supabase](https://supabase.com/) - Backend como serviço
-- [Vercel](https://vercel.com/) - Plataforma de deploy
-- [Lucide](https://lucide.dev/) - Ícones
-- [Recharts](https://recharts.org/) - Gráficos React
+- [ ] Notificações em tempo real
+- [ ] Integração com bancos brasileiros
+- [ ] Relatórios exportáveis (PDF/Excel)
+- [ ] App mobile (React Native)
+- [ ] IA para categorização automática
+- [ ] Metas financeiras com lembretes
+- [ ] Backup automático dos dados
 
 ---
 
-**Finance.ai** - Transformando a gestão financeira com tecnologia moderna e design intuitivo.
+**Finance.ai** - Transformando a gestão financeira pessoal com tecnologia moderna e design intuitivo.
