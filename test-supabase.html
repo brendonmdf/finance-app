@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Supabase</title>
+</head>
+<body>
+    <h1>Teste de Conexão Supabase</h1>
+    <div id="status">Testando...</div>
+    
+    <script>
+        const supabaseUrl = 'https://hyracsbdyykuhhpwnweyyj.supabase.co';
+        
+        fetch(supabaseUrl + '/rest/v1/', {
+            method: 'GET',
+            headers: {
+                'apikey': 'test',
+                'Authorization': 'Bearer test'
+            }
+        })
+        .then(response => {
+            document.getElementById('status').innerHTML = '✅ Supabase está acessível!';
+            console.log('Status:', response.status);
+        })
+        .catch(error => {
+            document.getElementById('status').innerHTML = '❌ Erro ao conectar com Supabase: ' + error.message;
+            console.error('Erro:', error);
+        });
+    </script>
+</body>
+</html>
+

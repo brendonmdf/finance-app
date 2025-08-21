@@ -6,8 +6,18 @@ const isClient = typeof window !== 'undefined'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-// Criar cliente apenas se as variáveis estiverem definidas
-export const supabase = supabaseUrl && supabaseAnonKey
+// Validar URL antes de criar o cliente
+const isValidUrl = (url: string) => {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Criar cliente apenas se as variáveis estiverem definidas e a URL for válida
+export const supabase = supabaseUrl && supabaseAnonKey && isValidUrl(supabaseUrl)
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
