@@ -1,0 +1,1 @@
+Forçar redeploy após correção das políticas RLS no Supabase
